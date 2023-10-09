@@ -1,72 +1,55 @@
 const { celebrate, Joi } = require('celebrate');
 const { IS_URL } = require('../util/constants');
-
-// Common Validation Schemas
-const emailSchema = Joi.string().email().required();
-const passwordSchema = Joi.string().min(8).required();
-const nameSchema = Joi.string().min(2).max(30);
-const aboutSchema = Joi.string().min(2).max(30);
-const avatarSchema = Joi.string().pattern(IS_URL);
-const idSchema = Joi.string().hex().length(24).required();
-
-// User Validations
-module.exports = {
-
-  // User Creation
-  validationCreateUser: celebrate({
-    body: Joi.object().keys({
-      email: emailSchema,
-      password: passwordSchema,
-      name: nameSchema,
-      about: aboutSchema,
-      avatar: avatarSchema,
-    }),
+// ---------------------------------------- Users --------------------------- /
+// авторизация
+module.exports.validationCreateUser = celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().email().required(),
+    password: Joi.string().required(),
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+    avatar: Joi.string().pattern(IS_URL),
   }),
-
-  // User Login
-  validationLogin: celebrate({
-    body: Joi.object().keys({
-      email: emailSchema,
-      password: passwordSchema,
-    }),
+});
+// аутенфикация
+module.exports.validationLogin = celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required(),
   }),
-
-  // Get User by ID
-  validationUserId: celebrate({
-    params: Joi.object().keys({
-      userId: idSchema,
-    }),
+});
+// Получить данные о пользователе по id
+module.exports.validationUserId = celebrate({
+  params: Joi.object().keys({
+    userId: Joi.string().hex().length(24).required(),
   }),
-
-  // Update User Info
-  validationUpdateUser: celebrate({
-    body: Joi.object().keys({
-      name: nameSchema.required(),
-      about: aboutSchema.required(),
-    }),
+});
+// Обновление данных
+module.exports.validationUpdateUser = celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30).required(),
+    about: Joi.string().min(2).max(30).required(),
   }),
-
-  // Update User Avatar
-  validationUpdateAvatar: celebrate({
-    body: Joi.object().keys({
-      avatar: avatarSchema.required(),
-    }),
+});
+// Обновление данных avatar
+module.exports.validationUpdateAvatar = celebrate({
+  body: Joi.object().keys({
+    avatar: Joi.string().pattern(IS_URL).required(),
   }),
+});
 
-  // Cards Validations
+// ---------------------------------------- Cards --------------------------- /
 
-  // Create Card
-  validationCreateCard: celebrate({
-    body: Joi.object().keys({
-      name: nameSchema.required(),
-      link: avatarSchema.required(),
-    }),
+// создание карточки
+module.exports.validationCreateCard = celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30).required(),
+    link: Joi.string().pattern(IS_URL).required(),
   }),
+});
 
-  // Get Card by ID
-  validationCardById: celebrate({
-    params: Joi.object().keys({
-      cardId: idSchema,
-    }),
+module.exports.validationCardById = celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().hex().length(24).required(),
   }),
-};
+});
