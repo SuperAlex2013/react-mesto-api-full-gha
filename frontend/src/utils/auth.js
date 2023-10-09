@@ -1,18 +1,14 @@
-export const BASE_URL = "https://api.ulra.nomoredomainsrocks.ru/";
-
-const defaultHeaders = {
-  Accept: "application/json",
-  "Content-Type": "application/json",
+const _api = {
+  //BASE_URL: "http://localhost:5000/",
+  BASE_URL: "https://api.ulra.nomoredomainsrocks.ru/",
+  HEADERS: {
+    Accept: "application/json",
+    "Content-Type": "application/json",
+  },
 };
 
-function _request(endpoint, { method, headers = {}, body } = {}) {
-  const options = {
-    method,
-    headers: { ...defaultHeaders, ...headers },
-    ...(body && { body: JSON.stringify(body) }),
-  };
-
-  return fetch(BASE_URL + endpoint, options).then(_getResponseData);
+function _request(url, options) {
+  return fetch(url, options).then(_getResponseData);
 }
 
 function _getResponseData(res) {
@@ -22,25 +18,37 @@ function _getResponseData(res) {
   return Promise.reject(`Ошибка ${res.status}`);
 }
 
-export const getContent = (jwt) => {
-  return _request("users/me", {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${jwt}`,
-    },
-  });
-};
-
 export const register = (password, email) => {
-  return _request("signup", {
+  return _request(_api.BASE_URL + "signup",{
     method: "POST",
-    body: { password, email },
-  });
+    credentials: 'include',
+    headers: _api.HEADERS,
+    body: JSON.stringify({ password, email }),
+  })
 };
 
 export const authorize = (password, email) => {
-  return _request("signin", {
+  return _request(_api.BASE_URL + "signin", {
     method: "POST",
-    body: { password, email },
+    credentials: 'include',
+    headers: _api.HEADERS,
+   body: JSON.stringify({ password, email }),
+  })
+};
+
+export const logout = () => {
+  return _request(_api.BASE_URL + "signout", {
+    method: "GET",
+    credentials: 'include',
+    headers: _api.HEADERS,
   });
 };
+
+export const checkToken = () => {
+    return _request(_api.BASE_URL + "users/me", {
+      method: "GET",
+      credentials: 'include',
+      headers: _api.HEADERS,
+  });
+};
+
