@@ -7,38 +7,52 @@ import EditAvatarPopup from "./EditAvatarPopup";
 import ImagePopup from "./ImagePopup";
 import NoFound from "./NoFound";
 import ConfirmDeletePopup from "./ConfirmDeletePopup";
-import api from "../utils/Api";
+//---------------------HOC--------------------------------------------/
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import { ProtectedRouteElement } from "../hooks/ProtectedRoute";
-import { Route, Routes, Navigate, useNavigate } from "react-router-dom"; 
+
+// ---------------------------Роутинг--------------------------------------/
+import { Route, Routes, Navigate, useNavigate } from "react-router-dom"; // импортируем Routes
 import Login from "./sign-in/Login";
 import Register from "./sign-up/Register";
 import InfoTooltip from "./InfoTooltip";
 import * as auth from "../utils/auth";
-import { is } from "@babel/types";
-
-
+import * as Api from "../utils/Api";
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
+
+  // -------------------------------------------Попапы------------------------------------/
+  // открытие попапа редактирования профиля
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
+  // открытития попапа добавления карточек
   const [isAddCardPopupOpen, setIsAddCardPopupOpen] = useState(false);
+  // открытие попапа смены аватара
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
+  // открытие попапа удаления карточки
   const [isConfirmDelCardPopupOpen, setIsConfirmDelCardPopupOpen] =
     useState(false);
+  // данные карточки на полный экран
   const [selectedCard, setSelectedCard] = useState(false);
+  // открытие попап карточки на весь экран
   const [isImagePopupOpen, setIsImagePopupOpen] = useState(false);
+
+  // открытие попап карточки об успешной регистрации
   const [isInfoTooltip, setInfoTooltip] = useState(false);
   const [tooltip, setTooltip] = useState({ image: "", message: "" });
   const navigate = useNavigate();
 
+  // данные пользователя email и password с сервера
   const [userData, setUserData] = useState({ email: "" });
+
+  // Контекст текущего пользователя
   const [currentUser, setCurrentUser] = useState({
     _id: undefined,
   });
 
   const [cards, setCards] = useState([]);
   const [cardId, setCardId] = useState("");
+  // рендер текста для кнопкок формы после нажатия на сабмит
   const [isLoading, setIsLoading] = useState(false);
 
   function closeAllPopups() {
@@ -50,29 +64,31 @@ function App() {
     setInfoTooltip(false);
   }
 
-  useEffect(() => {
-    if(loggedIn) {
-    api.getDataUser()
-      .then(userData => setCurrentUser(userData))
-      .catch(error => console.error(error));};
-  }, [loggedIn]);
+  // Инициализация User и Card
+  function loadUserAndCards() {
+    Api.getDataUser()
+      .then((userData) => {
+        setCurrentUser(userData);
+      })
+      .catch(console.error);
 
-  useEffect(() => {
-    if(loggedIn) {
-    api.getInitialCards()
-      .then(initialCards => setCards(initialCards))
-      .catch(error => console.error(error));};
-  }, [loggedIn]);
+    Api.getInitialCards()
+      .then((initialCards) => {
+        setCards(initialCards.reverse());
+      })
+      .catch(console.error);
+  }
 
+  // ---------------------------------------------------------> Открыте изображение
   function handleCardClick(card) {
     setIsImagePopupOpen(true);
     setSelectedCard(card);
   }
 
+  // Api---------------------------------------------------------> Like
   function handleCardLike(cardId, likes) {
-    const isLiked = likes.some((i) => i._id === currentUser._id);
-    api
-      .changeLikeCardStatus(cardId, !isLiked)
+    const isLiked = likes?.some((i) => i === currentUser._id);
+    Api.changeLikeCardStatus(cardId, !isLiked)
       .then((newCard) => {
         setCards((state) =>
           state.map((element) => (element._id === cardId ? newCard : element))
@@ -81,10 +97,10 @@ function App() {
       .catch(console.error);
   }
 
+  // Api---------------------------------------------------------> Удаление карточки
   function handleCardDelete() {
     setIsLoading(true);
-    api
-      .deleteCard(cardId)
+    Api.deleteCard(cardId)
       .then(() => {
         setCards(cards.filter((item) => item._id !== cardId));
         closeAllPopups();
@@ -100,10 +116,10 @@ function App() {
     setIsConfirmDelCardPopupOpen(true);
   }
 
+  // Api---------------------------------------------------------> Изменение данных пользователя
   function handleUpdateUser(userData) {
     setIsLoading(true);
-    api
-      .saveDataInfo(userData)
+    Api.saveDataInfo(userData)
       .then((updateUser) => {
         setCurrentUser(updateUser);
         closeAllPopups();
@@ -114,10 +130,10 @@ function App() {
       });
   }
 
+  // Api---------------------------------------------------------> Изменение аватара
   function handleUpdateAvatar(userData) {
     setIsLoading(true);
-    api
-      .saveDataProfile(userData)
+    Api.saveProfileAvatar(userData)
       .then((userAvatar) => {
         setCurrentUser(userAvatar);
         closeAllPopups();
@@ -128,12 +144,11 @@ function App() {
       });
   }
 
+  // Api---------------------------------------------------------> Добавление карточки
   function handleAddPlaceSubmit(inputValues) {
     setIsLoading(true);
-    api
-      .saveCardInfo(inputValues)
+    Api.saveCardInfo(inputValues)
       .then((cardData) => {
-
         setCards([cardData, ...cards]);
         closeAllPopups();
       })
@@ -143,27 +158,31 @@ function App() {
       });
   }
 
-  function tokenCheck() {
-    const jwt = localStorage.getItem("jwt");
-    if (jwt) {
-      auth
-        .getContent(jwt)
-        .then(({ data }) => {
-          navigate("/app");
+  // ---------------------------------------------------------> Аутинфикация пользователя
+  useEffect(() => {
+    auth
+      .checkToken()
+      .then((res) => {
+        if (res.email) {
+          loadUserAndCards();
+          setUserData({ email: res.email });
           setLoggedIn(true);
-          setUserData({ email: data.email });
-        })
-        .catch((error) => console.log(error));
-    }
-  }
+        }
+      })
+      .catch(console.error);
+  }, [loggedIn]);
 
   useEffect(() => {
-    tokenCheck();
-  }, []);
+    if (loggedIn) {
+      navigate("/app", { replace: true });
+    }
+  }, [loggedIn]);
 
-  function handleRegisterUser(formValue) {
-    const { password, email } = formValue;
-    auth.register(password, email)
+  // ---------------------------------------------------------> Регистрация пользователя
+
+  function handleRegisterUser({ password, email }) {
+    auth
+      .register(password, email)
       .then(() => {
         setInfoTooltip(true);
         setTooltip({
@@ -173,7 +192,7 @@ function App() {
         navigate("/signin", { replace: true });
         setTimeout(closeAllPopups, 2000);
       })
-      .catch(error => {
+      .catch((error) => {
         setInfoTooltip(true);
         setTooltip({
           image: false,
@@ -183,18 +202,21 @@ function App() {
       });
   }
 
-  function handleAuthorizeUser(formValue) {
-    const { password, email } = formValue;
-    auth.authorize(password, email)
-      .then(data => {
-        if (data.token) {
-          setUserData({ email });
-          localStorage.setItem("jwt", data.token);
-          setLoggedIn(true);
-          navigate("/app", { replace: true });
-        }
+  // ---------------------------------------------------------> Авторизация пользователя
+
+  function handleAuthorizeUser({ password, email }) {
+    auth
+      .authorize(password, email)
+      .then(() => {
+        auth.checkToken().then((res) => {
+          if (res.email) {
+            loadUserAndCards();
+            setUserData({ email });
+            setLoggedIn(true);
+          }
+        });
       })
-      .catch(error => {
+      .catch((error) => {
         setInfoTooltip(true);
         setTooltip({
           image: false,
@@ -204,11 +226,17 @@ function App() {
       });
   }
 
+  // ---------------------------------------------------------> Выход
+
   function signOut() {
-    setUserData({ email: "" });
-    localStorage.removeItem("jwt");
-    navigate("/signin", { replace: true });
-    setLoggedIn(false);
+    auth
+      .logout()
+      .then(() => {
+        navigate("/signin", { replace: true });
+        setLoggedIn(!loggedIn);
+        setUserData({ email: "" });
+      })
+      .catch((error) => console.log(error));
   }
 
   return (
@@ -253,18 +281,21 @@ function App() {
           />
           <Route path="*" element={<NoFound />} />
         </Routes>
+        {/*  Popup редактировать профиль*/}
         <EditProfilePopup
           onUpdateUser={handleUpdateUser}
           isOpen={isEditProfilePopupOpen}
           onClose={closeAllPopups}
           isLoading={isLoading}
         />
+        {/*  Popup добавление новой карточки*/}
         <AddCardPopup
           isOpen={isAddCardPopupOpen}
           onClose={closeAllPopups}
           handleAddPlaceClick={handleAddPlaceSubmit}
           isLoading={isLoading}
         />
+        {/*  Popup редактирования аватарки*/}
         <EditAvatarPopup
           isOpen={isEditAvatarPopupOpen}
           onClose={closeAllPopups}
@@ -272,11 +303,13 @@ function App() {
           isLoading={isLoading}
         />
 
+        {/*  Popup изображения*/}
         <ImagePopup
           isOpen={isImagePopupOpen}
           onClose={closeAllPopups}
           card={selectedCard}
         />
+        {/*  Popup удаления карточки*/}
         <ConfirmDeletePopup
           isOpen={isConfirmDelCardPopupOpen}
           onClose={closeAllPopups}
