@@ -62,7 +62,7 @@ class Api {
 }
 
 const api = new Api({
-  baseUrl: "api.ulra.nomoredomainsrocks.ru",
+  baseUrl: "https://api.ulra.nomoredomainsrocks.ru",
   HEADERS: {
     Accept: "application/json",
     "Content-Type": "application/json",
