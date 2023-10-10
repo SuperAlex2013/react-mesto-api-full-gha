@@ -6,7 +6,7 @@
 Адрес репозитория: https://github.com/SuperAlex2013/react-mesto-api-full-gha
 ## Ссылки на проект
 
-IP-адрес 51.250.92.66
+IP 51.250.92.66
 
 Frontend https://ulra.nomoredomainsrocks.ru/
 
