@@ -1,31 +1,76 @@
-# Проект: Место
+# 📝 Проект: Mesto
 
-this project is about places that appear somewhere somehow
+### _**Проектная работа №13. Курс «Веб-разработчик» от Яндекс Практикум.**_
 
-### Обзор
+## ⚙️ Функционал:
 
-* html
-* webpack
-* oop
-* css
-* js
-* react
-* rest api
-* bem nested
-* api requests
-* connection to server
-* registration
+- [x] Резиновая и адаптивная вёрстка
+- [x] Animation and Transform
+- [x] Оптимизация шрифтов
+- [x] Редактировать свой профиль
+- [x] Ставить лайки и вывод количества лайков
+- [x] Добавлять новые карточки с фото
+- [x] Удалять карточки
+- [x] Popup
+- [x] Валидация всех форм
+- [x] Менять аватарку
+- [x] API (Fetch)
+- [x] Регистрация, авторизация и аутентификация
 
-### TO DO
-* WHY DONT WE USE TRY CATCH???????
- 
-**Figma file**
+## 🛠️ Стэк:
 
-* [Ссылка на макет в Figma](https://www.figma.com/file/2cn9N9jSkmxD84oJik7xL7/JavaScript.-Sprint-4?node-id=0%3A1)
+- HTML5
+  - Семантическая вёрстка
+  - Разметка Open Graph
+- CSS3
+  - Flexbox
+  - Grid Layout
+  - Adaptive UI
+  - Media Queries
+- [BEM Nested](https://ru.bem.info/methodology/filestructure/)
+- JavaScript
+  - ES6
+  - ООП
+  - Классовый JS
+  - JSON
+  - Промисы;
+  - API (Fetch)
+- [ReactJS](https://ru.legacy.reactjs.org/)
+  - Реакт-хуки
+  - React Router
+  - React Protected Router
+- Git
+- Figma
+- Webpack
+- NPM
 
-**Картинки**
+---
 
-* there were no images that would fit my vision so there aro no images at all, but still optimized, kinda
+**🧩 Брифы:**
 
-### pages
-[click click click](https://superalex2013.github.io/mesto/)
+- [Figma 13-го спринта](https://www.figma.com/file/5H3gsn5lIGPwzBPby9jAOo/Sprint-14-RU?node-id=0%3A1)
+
+**📄 Чеклисты:**
+
+- [Чеклист 13-го спринта](https://code.s3.yandex.net/web-developer/checklists-pdf/new-program/checklist-12.pdf)
+
+**🌐 Проект на GitHub Pages:**
+
+- [gh-pages](https://maratdev.github.io/mesto-react/)
+
+---
+
+#### Установка и запуск приложения на локальной машине:
+
+Склонировано из репозитория:
+
+```bash
+git clone https://maratdev.github.io/react-mesto-auth/
+```
+
+👤 **Автор**
+
+**_Marat Zakar_**
+
+- Telegram: [@voredev](https://t.me/voredev)
+- GitHub: [@maratdev](https://github.com/maratdev)

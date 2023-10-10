@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import AuthForm from "../AuthForm";
 
 export default function Login({ handleAuthorizeUser }) {
@@ -7,20 +7,24 @@ export default function Login({ handleAuthorizeUser }) {
     password: "",
   });
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormValue(prevValue => ({
-      ...prevValue,
+  function handleChange(evt) {
+    const { name, value } = evt.target;
+    setFormValue({
+      ...formValue,
       [name]: value,
-    }));
-  };
+    });
+  }
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  function handleSubmit(evt) {
+    evt.preventDefault();
     if (formValue.password && formValue.email) {
-      handleAuthorizeUser(formValue);
+      handleAuthorizeUser({
+        password: formValue.password,
+        email: formValue.email,
+      });
     }
-  };
+  }
+
 
   return (
     <AuthForm

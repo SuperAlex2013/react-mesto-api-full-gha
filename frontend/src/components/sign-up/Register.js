@@ -7,20 +7,21 @@ export default function Register({ handleRegisterUser }) {
     password: "",
   });
 
-  const { email, password } = formValue;
-
   function handleChange(evt) {
     const { name, value } = evt.target;
-    setFormValue(prevValue => ({
-      ...prevValue,
+    setFormValue({
+      ...formValue,
       [name]: value,
-    }));
+    });
   }
 
   function handleSubmit(evt) {
     evt.preventDefault();
-    if (email && password) {
-      handleRegisterUser(formValue);
+    if (formValue.password && formValue.email) {
+      handleRegisterUser({
+        password: formValue.password,
+        email: formValue.email,
+      });
     }
   }
 

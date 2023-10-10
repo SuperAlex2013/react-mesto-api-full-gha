@@ -1,37 +1,34 @@
-import React, { useState } from "react";
-import logoImage from "../images/logo.svg";
-import burgerMenuOpenImage from "../images/burger_menu.svg";
-import burgerMenuCloseImage from "../images/burger_close.svg";
+import logo from "../images/logo.svg";
+import burger_opn from "../images/burger_menu.svg";
+import burger_close from "../images/burger_close.svg";
 import NavBar from "./NavBar";
+import { useState } from "react";
 
 export default function Header({ loggedIn, userData, signOut }) {
-  const [isMenuVisible, setIsMenuVisible] = useState(true);
-
-  const toggleMenu = () => {
-    setIsMenuVisible(!isMenuVisible);
-  };
-
-  const headerClassName = `header page__header ${!loggedIn ? "header__mobile" : ""}`;
-
+  const [menuVisible, setMenuVisible] = useState(true);
   return (
-    <header className={headerClassName}>
+    <header
+      className={`header page__header ${!loggedIn ? "header__mobile" : ""} `}
+    >
       <div className="header__wrap">
-        <img className="header__logo" src={logoImage} alt="логотип Mesto" />
+        <img className="header__logo" src={logo} alt="логотип Mesto" />
         {loggedIn && (
           <img
-            onClick={toggleMenu}
+            onClick={() => setMenuVisible(!menuVisible)}
             className="header__btn"
-            src={isMenuVisible ? burgerMenuOpenImage : burgerMenuCloseImage}
+            src={menuVisible ? burger_opn : burger_close}
             alt="меню"
           />
         )}
       </div>
-      <NavBar
-        menuVisible={isMenuVisible}
-        signOut={signOut}
-        loggedIn={loggedIn}
-        userData={userData}
-      />
+      {
+        <NavBar
+          menuVisible={menuVisible}
+          signOut={signOut}
+          loggedIn={loggedIn}
+          userData={userData}
+        />
+      }
     </header>
   );
 }
